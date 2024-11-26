@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.13;
 
-import {Test, console} from "forge-std/Test.sol";
-
+import {Test, console2} from "forge-std/Test.sol";
 import {HelloWorld} from "../src/HelloWorld.sol";
 
 contract SaysHelloWorld {
@@ -11,17 +10,18 @@ contract SaysHelloWorld {
     }
 }
 
-contract TestHelloWorld is Test {
-    HelloWorld target;
-    SaysHelloWorld helper;
+contract HelloWorldTest is Test {
+    HelloWorld public helloWorld;
+    SaysHelloWorld public hello;
 
     function setUp() public {
-        target = new HelloWorld();
-        helper = new SaysHelloWorld();
+        helloWorld = new HelloWorld();
+        hello = new SaysHelloWorld();
     }
 
-    function testHelloWorld() public {
-        string memory response = target.sayHelloWorld(address(helper));
-        assertEq(keccak256(abi.encodePacked(response)), keccak256(abi.encodePacked("Hello World")));
+    function test_SayHelloWorld() public {
+        string memory greetings = helloWorld.sayHelloWorld(address(hello));
+
+        require(keccak256(abi.encodePacked(greetings)) == keccak256(abi.encodePacked("Hello World")));
     }
 }
