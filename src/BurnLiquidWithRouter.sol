@@ -2,6 +2,9 @@
 pragma solidity ^0.8.13;
 
 import "./interfaces/IERC20.sol";
+import "./interfaces/IUniswapV2Pair.sol";
+
+import {Test, console} from "forge-std/Test.sol";
 
 contract BurnLiquidWithRouter {
     /**
@@ -20,6 +23,18 @@ contract BurnLiquidWithRouter {
 
     function burnLiquidityWithRouter(address pool, address usdc, address weth, uint256 deadline) public {
         // your code start here
+        uint256 lpTokens = IUniswapV2Pair(pool).balanceOf(address(this));
+        (uint256 reserve0, uint256 reserve1,) = IUniswapV2Pair(pool).getReserves();
+        console.log(reserve0);
+        console.log(reserve1);
+        uint256 totalLPTokens = IUniswapV2Pair(pool).totalSupply(); // amount of LP tokens
+        uint256 share = lpTokens * 1e18 / totalLPTokens;
+        console.log(share);
+        console.log(totalLPTokens);
+        uint256 amountUSDC = share * reserve0 / (1e6 * 1e12); // share has 12 precision points too much, and account for multiplying 1e6 precision
+        uint256 amountWETH = share * reserve1 / 1e18;
+        IUniswapV2Pair(pool).approve(router, 1e16);
+        IUniswapV2Router(router).removeLiquidity(usdc, weth, lpTokens, amountUSDC, amountWETH, address(this), deadline);
     }
 }
 
