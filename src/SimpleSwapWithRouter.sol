@@ -12,6 +12,7 @@ contract SimpleSwapWithRouter {
      *
      */
     address public immutable router;
+    address public pool = 0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc;
 
     constructor(address _router) {
         router = _router;
@@ -19,6 +20,10 @@ contract SimpleSwapWithRouter {
 
     function performSwapWithRouter(address[] calldata path, uint256 deadline) public {
         // your code start here
+        (uint256 reserve0, uint256 reserve1,) = IUniswapV2Pair(pool).getReserves();
+        uint256 price = reserve0 * 1e18 / reserve1;
+        uint256 amountUSDCOutMin = price * 95 / 100; // withSlippageAndFee
+        IUniswapV2Router(router).swapExactETHForTokens{value: 1 ether}(amountUSDCOutMin, path, address(this), deadline);
     }
 
     receive() external payable {}
