@@ -20,5 +20,9 @@ contract BurnLiquid {
          *     to: recipient address to receive tokenA and tokenB.
          */
         // your code here
+        IUniswapV2Pair pair = IUniswapV2Pair(pool);
+        uint256 currentBalance = pair.balanceOf(address(this));
+        pair.transfer(address(pair), currentBalance);
+        pair.burn(address(this));
     }
 }
