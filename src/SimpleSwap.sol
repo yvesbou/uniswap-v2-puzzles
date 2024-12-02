@@ -24,5 +24,10 @@ contract SimpleSwap {
          */
 
         // your code start here
+        (uint256 reserve0, uint256 reserve1,) = IUniswapV2Pair(pool).getReserves();
+        uint256 currentPrice = reserve0 * 1e18 / reserve1;
+        uint256 accountForFeesAndSlippage = currentPrice * 95 / 100;
+        IERC20(weth).transfer(pool, 1 ether);
+        IUniswapV2Pair(pool).swap(accountForFeesAndSlippage, 0, address(this), "");
     }
 }
